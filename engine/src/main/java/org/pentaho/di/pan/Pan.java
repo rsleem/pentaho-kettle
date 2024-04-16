@@ -22,17 +22,12 @@
 
 package org.pentaho.di.pan;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-
 import org.pentaho.di.base.CommandExecutorCodes;
 import org.pentaho.di.base.Params;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.Result;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.KettleEnvironment;
+import org.pentaho.di.core.Result;
 import org.pentaho.di.core.logging.FileLoggingEventListener;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannel;
@@ -41,16 +36,25 @@ import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.NamedParamsDefault;
 import org.pentaho.di.core.parameters.UnknownParamException;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.i18n.LanguageChoice;
 import org.pentaho.di.kitchen.Kitchen;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
 public class Pan {
   private static Class<?> PKG = Pan.class; // for i18n purposes, needed by Translator2!!
 
   public static final String STRING_PAN = "Pan";
+
+  // licensing related property so that Revenera can properly identify execution is triggered by spoon
+  private static final String EXECUTION_TYPE_PROP = "system-property.pentaho.execution.type";
+
   private static LogChannelInterface log = new LogChannel( STRING_PAN );
 
   private static FileLoggingEventListener fileLoggingEventListener;
@@ -270,6 +274,9 @@ public class Pan {
               .base64Zip( optionBase64Zip.toString() )
               .namedParams( optionParams )
               .build();
+
+      // setting property to kitchen-ee so that Revenera can properly identify execution is triggered by kitchen command
+      System.setProperty( EXECUTION_TYPE_PROP, "pan-ee" );
 
       Result result = getCommandExecutor().execute( transParams, args.toArray( new String[ args.size() ] ) );
 

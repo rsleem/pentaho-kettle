@@ -709,8 +709,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       initLogging( commandLineOptions );
       // remember...
 
-      // setting property to designer so that Revenera can properly identify execution is triggered by spoon
-      System.setProperty( EXECUTION_TYPE_PROP, "designer" );
+      // setting property to spoon-ee so that Revenera can properly identify execution is triggered by spoon
+      System.setProperty( EXECUTION_TYPE_PROP, "spoon-ee" );
 
       staticSpoon = new Spoon();
       staticSpoon.commandLineOptions = commandLineOptions;

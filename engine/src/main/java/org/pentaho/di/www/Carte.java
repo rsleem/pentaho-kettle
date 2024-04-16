@@ -22,13 +22,13 @@
 
 package org.pentaho.di.www;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.List;
-import java.util.Properties;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import com.google.common.annotations.VisibleForTesting;
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.client.config.ClientConfig;
+import com.sun.jersey.api.client.config.DefaultClientConfig;
+import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
+import com.sun.jersey.api.json.JSONConfiguration;
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -53,12 +53,11 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.api.client.config.ClientConfig;
-import com.sun.jersey.api.client.config.DefaultClientConfig;
-import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
-import com.sun.jersey.api.json.JSONConfiguration;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.List;
+import java.util.Properties;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Carte {
   private static Class<?> PKG = Carte.class; // for i18n purposes, needed by Translator2!!
@@ -67,6 +66,8 @@ public class Carte {
   private SlaveServerConfig config;
   private boolean allOK;
   private static Options options;
+  // licensing related property so that Revenera can properly identify execution is triggered by spoon
+  private static final String EXECUTION_TYPE_PROP = "system-property.pentaho.execution.type";
 
   public Carte( final SlaveServerConfig config ) throws Exception {
     this( config, null );
@@ -161,6 +162,8 @@ public class Carte {
 
   public static void main( String[] args ) {
     try {
+      // setting property to kitchen-ee so that Revenera can properly identify execution is triggered by kitchen command
+      System.setProperty( EXECUTION_TYPE_PROP, "carte-ee" );
       parseAndRunCommand( args );
     } catch ( Exception e ) {
       e.printStackTrace();

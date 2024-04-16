@@ -22,23 +22,12 @@
 
 package org.pentaho.di.kitchen;
 
-import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
-
 import org.pentaho.di.base.CommandExecutorCodes;
 import org.pentaho.di.base.Params;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.Result;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.KettleEnvironment;
+import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.logging.FileLoggingEventListener;
@@ -52,15 +41,28 @@ import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.RepositoryPluginType;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.util.ExecutorUtil;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.i18n.LanguageChoice;
-import org.pentaho.di.metastore.MetaStoreConst;
 import org.pentaho.di.pan.CommandLineOption;
+
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 
 public class Kitchen {
   private static Class<?> PKG = Kitchen.class; // for i18n purposes, needed by Translator2!!
 
   public static final String STRING_KITCHEN = "Kitchen";
+
+  // licensing related property so that Revenera can properly identify execution is triggered by spoon
+  private static final String EXECUTION_TYPE_PROP = "system-property.pentaho.execution.type";
 
   private static KitchenCommandExecutor commandExecutor;
 
@@ -280,6 +282,10 @@ public class Kitchen {
               .namedParams( optionParams )
               .customNamedParams( customOptions )
               .build();
+
+
+      // setting property to kitchen-ee so that Revenera can properly identify execution is triggered by kitchen command
+      System.setProperty( EXECUTION_TYPE_PROP, "kitchen-ee" );
 
       result = getCommandExecutor().execute( jobParams, args.toArray( new String[ args.size() ] ) );
 
